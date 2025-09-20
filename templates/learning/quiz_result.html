@@ -1,0 +1,50 @@
+{% raw %}{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Quiz Result" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm text-center">
+                <div class="card-body p-5">
+                    <h1 class="display-4 fw-bold 
+                        {% if attempt.score >= 50 %}text-success{% else %}text-danger{% endif %}">
+                        {{ attempt.score|floatformat:0 }}%
+                    </h1>
+                    <p class="lead text-muted">{% trans "Your Score" %}</p>
+                    <hr>
+                    <a href="{% url 'learning:lesson_detail' course_slug=enrollment.course.slug lesson_order=1 %}" class="btn btn-primary mt-3">
+                        {% trans "Back to Course" %}
+                    </a>
+                </div>
+            </div>
+
+            <h3 class="mt-5 mb-3">{% trans "Review Your Answers" %}</h3>
+            
+            {% for question in enrollment.course.lesson.content_data.questions %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p><strong>{% trans "Question" %} {{ forloop.counter }}:</strong> {{ question.question_text }}</p>
+                    
+                    {% for answer in question.answers %}
+                    <div class="form-check 
+                        {% if answer.is_correct %}bg-success-soft border border-success rounded p-2{% endif %}
+                        {% if not answer.is_correct and attempt.answers|get_item:forloop.parentloop.counter|stringformat:'s' == answer._id|stringformat:'s' %}bg-danger-soft border border-danger rounded p-2{% endif %}">
+                        
+                        <input class="form-check-input" type="radio" disabled
+                               {% if attempt.answers|get_item:forloop.parentloop.counter|stringformat:'s' == answer._id|stringformat:'s' %}checked{% endif %}>
+                        <label class="form-check-label">
+                            {{ answer.answer_text }}
+                            {% if answer.is_correct %}<span class="badge bg-success ms-2">{% trans "Correct" %}</span>{% endif %}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% raw %}{% load i18n %}
+<form class="d-flex gap-2"
+      hx-post="{% url 'ai_ask' %}"
+      hx-target="#ai-chat-body"
+      hx-swap="none"
+      hx-indicator="#ai-typing-indicator">
+    {% csrf_token %}
+    <input type="hidden" name="course_id" value="{{ course_pk }}">
+    <input type="hidden" name="lesson_id" value="{{ lesson_id }}">
+    
+    <input type="text" name="question" class="form-control" placeholder="{% trans 'Ask about this lesson...' %}" required autofocus>
+    
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-send-fill"></i>
+    </button>
+</form>
+<div id="ai-typing-indicator" class="htmx-indicator mt-2 text-muted small">
+    <i>{% trans "AI is thinking..." %}</i>
+</div>
